@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require( "path" );
 
 
 module.exports = (client) => {
@@ -6,12 +7,13 @@ module.exports = (client) => {
   try {
 
     // read the modules text file in root dir
-    let modules = fs.readFileSync('./lists/modules.txt', 'utf8').split("\n");
+    // path.dirname(__dirname) returns the parent folder
+    let modules = fs.readFileSync(path.dirname(__dirname) + `/lists/modules.txt`, 'utf8').split("\n");
     let cleaned = [];
 
     // weed out any commands, blank spaces, and duplicates
     modules.forEach((module) => {
-
+      module = module.toLowerCase().replace(/[\n\r]/g, '');
       if (module.startsWith("#") || !module) return;
       if (!cleaned.includes(module.toLowerCase())) cleaned.push(module.toLowerCase());
 
@@ -24,7 +26,7 @@ module.exports = (client) => {
 
       try {
 
-        require(`../modules/${module}`)(client);
+        require(path.dirname(__dirname) +  `/modules/${module}.js`)(client);
         client.log(`Loaded module ${module}!`);
       }
 
